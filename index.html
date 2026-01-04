@@ -1,0 +1,2364 @@
+<!-- HTML -->
+<div id="loader">
+  <div class="spinner"></div>
+</div>
+
+<!-- CSS -->
+<style>
+  /* Loader kapsayıcısı tüm ekranı kaplar */
+  #loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #111828; /* Beyaz arka plan, istersen değiştirebilirsin */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  /* iPhone tarzı spinner */
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #ccc;
+    border-top-color: #fff; /* iPhone mavi tonu */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Loader gizlenince kaybolacak */
+  #loader.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+</style>
+
+<!-- JS -->
+<script>
+  // Sayfa yüklenince 2 saniye sonra loader kaybolur
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('loader').classList.add('hidden');
+    }, 2000); // 2000ms = 2 saniye
+  });
+</script>
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Chatbot</title>
+    <link rel="stylesheet" href="./style.css">
+
+  </head>
+    
+  <body>
+  <!-- 聊天按鈕 -->
+<div id="chatbot" class="chat-button">
+	<svg id="hair" class="robot-layer" width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<path d="M29.9988 24.148L5.8512 0L-5.0344e-05 5.85133L24.1476 29.9993L29.9988 24.148Z" fill="#0E75B4" />
+		<path d="M24.1487 0.00046199L0.00109863 24.1484L5.85235 29.9998L30 5.8518L24.1487 0.00046199Z" fill="#0E75B4" />
+	</svg>
+	<svg id="head" class="robot-layer" width="52" height="50" viewBox="0 0 52 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<path d="M26,0c20.24,0,26,5.49,26,26.47,0,23.84-10.75,23.53-26,23.53S0,50.31,0,26.47C0,5.49,5.76,0,26,0Z" fill="url(#head-color)" />
+		<defs>
+			<linearGradient id="head-color" x1="26" y1="0" x2="26" y2="50" gradientUnits="userSpaceOnUse">
+				<stop stop-color="#69D7FF" />
+				<stop offset="1" stop-color="#00B4F5" />
+			</linearGradient>
+		</defs>
+	</svg>
+	<svg id="face" class="robot-layer" width="44" height="36" viewBox="0 0 44 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<path d="M22,36c15.09,0,20.52-.87,21.83-16.94S39.44,0,22,0-1.1,3.45.17,19.06c1.3,16.07,6.74,16.94,21.83,16.94Z" fill="url(#face-color)" />
+		<defs>
+			<linearGradient id="face-color" x1="22" y1="0" x2="22" y2="36" gradientUnits="userSpaceOnUse">
+				<stop stop-color="#005284" />
+				<stop offset="1" stop-color="#0076BE" />
+			</linearGradient>
+		</defs>
+	</svg>
+	<svg id="expression" class="robot-layer" width="30" height="15" viewBox="0 0 32 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<path id="eye-l" d="M3.78,12c3.45,0,3.78-2.7,3.78-6S7.56,0,3.78,0,0,2.7,0,6s.33,6,3.78,6Z" fill="white" />
+		<path id="mouth" d="M13.05,12.76c-1.13-.45-.82,2.24,2.99,2.24,4.21,0,4.24-3.55,3.01-4.13-1.35-.64-1.75,3.6-5.99,1.89Z" fill="white" />
+		<path id="eye-r" d="M26.22,12c3.45,0,3.78-2.7,3.78-6s0-6-3.78-6-3.78,2.7-3.78,6,.33,6,3.78,6Z" fill="white" />
+	</svg>
+	<!-- 問候語泡泡 -->
+	<div class="greeting-bubble" id="greetingBubble"><strong>Hi there,</strong><br>How can we help you today</div>
+</div>
+<!-- 聊天視窗 -->
+<div id="chatWindow" class="chat-window">
+	<div class="chat-header">
+		<div class="header-left">
+			<button class="expand-button" id="expandButton">
+				<svg viewBox="0 0 24 24">
+					<path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
+				</svg>
+			</button>
+		</div>
+		<h3>Ates - BMO Chat Bot</h3>
+		<button class="close-button" id="closeButton">
+			<svg viewBox="0 0 24 24">
+				<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+			</svg>
+		</button>
+	</div>
+	<div class="chat-messages" id="chatMessages">
+		<!-- 訊息會動態加入這裡 -->
+	</div>
+	<div class="chat-input-area">
+		<div class="chat-input-group">
+			<input type="text" class="chat-input" id="chatInput" placeholder="Send a message...">
+			<button class="send-button" id="sendButton">
+				<svg viewBox="0 0 24 24">
+					<path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+				</svg>
+			</button>
+		</div>
+	</div>
+</div>
+    <script  src="./script.js"></script>
+
+  </body>
+  
+</html>
+<style>* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	background-color: transparent;
+}
+
+/* 聊天按鈕 */
+/* .chat-button {
+	position: fixed;
+	bottom: 30px;
+	right: 30px;
+	width: 60px;
+	height: 60px;
+	background: linear-gradient(135deg, #2ebbee 0%, #0e75b4 100%);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	transition: all 0.3s ease;
+	z-index: 1000;
+} */
+/* .chat-button:hover {
+	transform: scale(1.1);
+	box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+} */
+/* .chat-button svg {
+	width: 30px;
+	height: 30px;
+	fill: white;
+} */
+/* .chat-button.hidden {
+	opacity: 0;
+	pointer-events: none;
+	transform: scale(0);
+} */
+
+/* #canvas {
+	position: fixed;
+	bottom: 32px;
+	right: 32px;
+	cursor: pointer;
+	box-shadow: inset 0 0 0 2px;
+} */
+#chatbot {
+	position: relative;
+	width: 64px;
+	height: 64px;
+	position: fixed;
+	bottom: 32px;
+	right: 32px;
+	cursor: pointer;
+	/* 	box-shadow: inset 0 0 0 2px red; */
+	/* 	filter: drop-shadow(0 6px 12px hsl(200 100% 50% / 0.6)); */
+	/* 	cursor: pointer; */
+	/* 	transform: scale(3); */
+	/* 		box-shadow: inset 0 0 0 2px red; */
+}
+.robot-layer {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(
+		calc(-50% + var(--offset-x, 0px)),
+		calc(-50% + var(--offset-y, 0px))
+	);
+	transition: transform 0.1s ease-out;
+	will-change: transform; /* 提示瀏覽器優化，浏览器会提前分配大量资源，反而可能导致性能下降 */
+}
+#chatbot:hover #hair {
+	transform: translate(
+			calc(-50% + var(--offset-x, 0px)),
+			calc(-50% + var(--offset-y, 0px))
+		)
+		rotate(-270deg);
+	transition: 0.3s ease-out;
+}
+
+/* 問候語泡泡 */
+.greeting-bubble {
+	position: fixed;
+	bottom: 33px;
+	right: 105px;
+	background: white;
+	padding: 12px 18px;
+	border-radius: 16px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	opacity: 0;
+	transform: translateX(10px);
+	pointer-events: none;
+	transition: all 0.3s ease;
+	z-index: 999;
+	white-space: nowrap;
+	font-size: 14px;
+	color: #333;
+}
+
+.greeting-bubble::after {
+	content: "";
+	position: absolute;
+	right: -8px;
+	top: 65%;
+	transform: translateY(-50%);
+	width: 0;
+	height: 0;
+	border-left: 8px solid white;
+	border-top: 8px solid transparent;
+	border-bottom: 8px solid transparent;
+}
+
+.chat-button:hover .greeting-bubble {
+	opacity: 1;
+	transform: translateX(0);
+}
+
+/* 聊天視窗 */
+.chat-window {
+	position: fixed;
+	bottom: 32px;
+	right: 32px;
+	width: 380px;
+	height: 550px;
+	background: white;
+	border-radius: 20px;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+	display: flex;
+	flex-direction: column;
+	opacity: 0;
+	transform: translateY(20px) scale(0.95);
+	pointer-events: none;
+	transition: all 0.3s ease;
+	z-index: 1001;
+	overflow: hidden;
+}
+
+.chat-window.active {
+	opacity: 1;
+	transform: translateY(0) scale(1);
+	pointer-events: all;
+}
+
+.chat-window.expanded {
+	width: 410px;
+	height: 100vh;
+	right: 0;
+	bottom: 0;
+	border-radius: unset;
+}
+
+/* 聊天標題列 */
+.chat-header {
+	background: linear-gradient(135deg, #2ebbee 0%, #0e75b4 100%);
+	color: white;
+	padding: 10px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	position: relative;
+}
+
+.chat-header h3 {
+	/* position: absolute; */
+	/* left: 50%; */
+	/* transform: translateX(-50%); */
+	font-size: 16px;
+	font-weight: 600;
+	margin: 0;
+}
+
+.header-left {
+	display: flex;
+	gap: 10px;
+}
+
+.expand-button,
+.close-button {
+	background: rgba(255, 255, 255, 0);
+	border: none;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s ease;
+}
+
+.expand-button:hover,
+.close-button:hover {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.expand-button svg,
+.close-button svg {
+	width: 24px;
+	height: 24px;
+	fill: white;
+}
+
+/* 對話區域 */
+.chat-messages {
+	flex: 1;
+	padding: 20px;
+	overflow-y: auto;
+	background: #f8f9fa;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
+.chat-messages::-webkit-scrollbar {
+	width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+	background: #ddd;
+	border-radius: 3px;
+}
+
+/* 訊息 */
+.message {
+	display: flex;
+	align-items: flex-end;
+	gap: 10px;
+	animation: ani-message-show 0.3s ease;
+}
+@keyframes ani-message-show {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* 多筆訊息 */
+.message.grouped {
+	margin-top: -10px;
+}
+.message.grouped .ai-avatar {
+	visibility: hidden;
+}
+
+.message.user {
+	justify-content: flex-end;
+}
+.message.ai {
+	justify-content: flex-start;
+}
+
+/* AI 頭像 */
+.ai-avatar {
+	width: 36px;
+	height: 36px;
+	/* 	border-radius: 50%; */
+	/* 	background-image: url("ai-avatar.png"); */
+	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAA+CAYAAACLIVOzAAAACXBIWXMAAAsSAAALEgHS3X78AAAGoElEQVRogc2aT0wbRxTGv5jF2PyxWRM5iRUMhEaqSqgtJT1UhYZWriqVqKWXHppD3FvDpTmh9Bb1kopLk0vUW+CQQ28oDb3EB6dwqBQi2QFXbRQXMIlBJHixA9jGG6eH3TVe7+x6d9YO/iQOnpkd3m/fzJu3M3PkzZs3MCvnxGwQgD89OXrFRB9+ANcABNOTo9tm7DliFkoEui3+nE5PjgYp+vADCANwAogCGDEDZqF9UDQmiAMgALjknJidMthHORAA+ACEnROznbR2UUMRgCTpBiMASTIFRgWlASSpKpgGkCRqMMNQzonZMWgDSVIF0wEkySe2MyQaT60ASOtsqwAzACQpotcwSYah0pOjEQAjoACjAKKKptQhncLA3wF8bKA9FRBgcp2iANMraiDA5DpFMRT1yBQQUIOMAiB7jLG3gLHbNJ/LpRTvwjQQYALKF+J6IXipF8BIkX/dbmGaztIa8rpQ2Glqbn4EIbpGAESiATZM05chKF+IGwEQhADTQ/MPKfQAwAyAqWiA1ZUP6oLyhbgghAz6bYGoaRrAtWiAXdFqpAnlC3F+AFMQVvZGURoC2A21BqpQonduoPbhulaaBnCFNCSJIV0Euo3GBQKASxDmmkIKKHHIqbq2wXTeF+IUtpI8NYXG9lClfhCjckkyKF+Iu4LGCgp6NVX+QxYofCFuBRRhW8oMclymVFYs8Nh/tav6jKWZgbWjrfSbsbeAsQlZCGNvMWoCAHwXDbBTAMBIJWJwqArEZ/PIcWnsbaaw/2oXfDZPYwAAYG8zpVpnYx2wuZxodbtk8BoKQvRYyVO+EDcD4Cu1J3KpNDKJdU1D6iXG3gKH1wNHz4lqTfuiAXalfE4RgYo8j9Q/y9hYiB0KECCMjtS/y3g294iUBJdrDBADRWX0kFTkeWw8jCGTWK+5oTTis3lsLMSwk9xUazICHES/EVKLjYcxzcl+WHq59FTNY37gAMpfWbsdX2tIIEkvY09R5PnK4h5fiOuUoGR7a0WeR2Y1+VaMoxWfzWPn+QtSlV+COl9euvP8BYr867obZlaZBPHF9xIT2r3NrfpaUyPx2TxpivRaSJGvPDNodJHmPaOnUaUunjuJof4ueFk7ElwW8/Et3Fl4ZtpAL2vH+HAfBj0OAMB8PIU7C2tIcFnVZ/Yzu4BHVjSigCoWFBFFpp+/fA+Xh/pkZd+ePYlBjwNX7/6tG6BSgx4H/vj+QzhsByYNnerC+HAfPvrlT1UwkhMM7ft5WbsCSNLloT54WbuR7mQaH+6TAUly2BiMD5P/p5osELa4StKaT15Xq2Zn1eq1NHyqS7VOGo56pYDS0vtVOu8x4aluE89WytDwc9qaNeu9LL2naikFFOUHWkNJCWWjh0rnCqaMqZUsAHQf7c/9p51pPE7SL9qZnPZSYkQWUBw/qimdpffU46T6x5/W4kv61FcMP5tLfXdsPr6l+kYzOR6LJjw1H1f/qp6Pq48QS7NybTN86Hb1boxYfvm3qO4+Lp47iaUfP8VQ/8HadGt+GUvrypeytJ7RTMFIgY0BYU7ZWIfqInxn4Rnm4lu4eK67rEw7PyvXhYHjuPWNsLU4fKqr5IV0toAvfv0LFwaOlZaGBLdXNackBLYwEw2wEV+Ikze02wCNzCLBZXH9/hNdEGs/fY65+BYWkxkMehwYHThWqquMlulswXBibHUo55Q0INMo22rWuc+mS7fmlnH1s9MyGKD6sNIjxt4CC6OYUxGpJIKyr1+by1iupaXr95/gXmwDFwaOl8oWkxnci22Y7tvGEoPaChHK2tEGC9NUs0/6xWTGVGRUE+nlRwNsRIp+4crKVrd61twoanW7KoseAAchPVxZq2OL91DV7nGT5lMYEKHEI0bZQmPtaIONrd3cqrU6+7tJxTOAfPFVnMgdPXMaFqapTmbRy+E9QVp0o9EAGwHkUDOouI7D2FvgetfYp3S9Ze1oU7Op5JQSlDgEFd5q97hx9Mw7DeGxVrcLxz8YIFWtSgduAOHKgS/ERUA4IuWzeWzH17ROHOomxt6Czv5utHvcak2+jgbY0kk9CUrzuhufzWNvM4W9zS3sv9qt2/a0taMN1o42tLpdpNBdrpvRACu7D0+8HOILcWPQeUpf5HlhQxHmdnalBb/yLLiKpqMBNlhZqHXjpV4XFGslhYckqX5PieGxF8DNOhlFqwcAPlEDAvTfIuuFcPo9hsO5Z5HGwfW4cLXGhi8xioD+sj/pwO682jMGtArhEiMgDP1tAGFpUdWr/wE/jpB8hO6m/QAAAABJRU5ErkJggg=="); /* 使用 Base64 PNG 資料 */
+	background-size: contain; /* 確保圖片覆蓋整個圓形 */
+	background-position: center; /* 將圖片置中 */
+	background-repeat: no-repeat; /* 避免圖片重複 */
+}
+
+/* 訊息氣泡 */
+.message-bubble {
+	max-width: 75%;
+	padding: 12px 16px;
+	word-wrap: break-word;
+	line-height: 1.5;
+	font-size: 14px;
+}
+.message.user .message-bubble {
+	border-radius: 16px 16px 4px 16px;
+	/* 	background: linear-gradient(135deg, #2ebbee 0%, #0e75b4 100%); */
+	background: #2ebbee;
+	color: white;
+}
+.message.ai .message-bubble {
+	background: white;
+	color: #333;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+/* 開頭訊息 */
+.message.ai:not(.grouped) .message-bubble {
+	border-radius: 16px 16px 16px 4px;
+}
+/* 中間訊息 */
+.message.ai:not(.grouped) + .ai.grouped .message-bubble,
+.message.ai.grouped + .ai.grouped .message-bubble {
+	border-radius: 4px 16px 16px 4px;
+}
+/* 結尾訊息 */
+.message.ai.grouped:not(:has(+ .ai.grouped)) .message-bubble {
+	border-radius: 4px 16px 16px 16px;
+}
+
+/* 輸入區域 */
+.chat-input-area {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px;
+	border-top: 1px solid #eee;
+	background: white;
+	box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.chat-input-group {
+	display: flex;
+	flex: 1;
+	/* 	border: 1px solid #e0e0e0; */
+	/* 	background: #f5f5f5; */
+	/* 	border-radius: 12px; */
+}
+.chat-input {
+	flex: 1;
+	padding: 12px 16px;
+	border: none;
+	/* 	border: 2px solid #e0e0e0; */
+	/* 	border-radius: 25px; */
+	outline: none;
+	background: none;
+	font-size: 14px;
+	transition: all 0.2s ease;
+}
+
+/* .chat-input:focus {
+	border-color: #2ebbee;
+} */
+
+.send-button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	/* 	background: linear-gradient(135deg, #2ebbee 0%, #0e75b4 100%); */
+	/* 	color: white; */
+	/* 	color: linear-gradient(135deg, #2ebbee 0%, #0e75b4 100%); */
+	width: 40px;
+	height: 40px;
+	border: none;
+	border-radius: 50%;
+	cursor: pointer;
+	background: none;
+	transition: all 0.2s ease;
+}
+
+.send-button svg {
+	width: 20px;
+	height: 20px;
+	/* 	fill: white; */
+	fill: #2ebbee;
+}
+
+/* 輸入中動畫 */
+.typing-indicator {
+	display: flex;
+	gap: 4px;
+	padding: 12px 16px;
+}
+
+.typing-indicator span {
+	width: 8px;
+	height: 8px;
+	background: #999;
+	border-radius: 50%;
+	animation: typing 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+	animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+	animation-delay: 0.4s;
+}
+
+@keyframes typing {
+	0%,
+	60%,
+	100% {
+		transform: translateY(0);
+	}
+
+	30% {
+		transform: translateY(-10px);
+	}
+}
+
+/* 選單卡片容器 */
+.menu-cards-wrapper {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	position: relative;
+	width: 100%;
+}
+
+.menu-cards-container {
+	display: flex;
+	gap: 12px;
+	overflow-x: auto;
+	scroll-behavior: smooth;
+	padding: 5px 44px;
+	flex: 1;
+	scrollbar-width: none;
+}
+
+.menu-cards-container::-webkit-scrollbar {
+	display: none;
+}
+
+.card {
+	min-width: 200px;
+	background: white;
+	border-radius: 12px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	padding: 15px;
+	flex-shrink: 0;
+}
+
+.card .title {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 12px;
+	font-weight: 600;
+	color: #333;
+	font-size: 15px;
+}
+
+.card-title-img {
+	font-size: 20px;
+}
+
+.card-button {
+	margin: 8px 0;
+	padding: 8px 12px;
+	background: #f0f0f0;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.card-button:hover {
+	background: #e0e0e0;
+}
+
+.card-button a {
+	text-decoration: none;
+	color: #333;
+	font-size: 14px;
+}
+
+.scroll-button {
+	position: absolute;
+	background: rgba(255, 255, 255, 0.9);
+	border: 1px solid #ddd;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	cursor: pointer;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.scroll-button.right-button {
+	right: 0;
+}
+
+.scroll-button.visible {
+	display: flex;
+}
+
+.scroll-button:hover {
+	background: white;
+}
+
+.scroll-button svg {
+	width: 16px;
+	height: 16px;
+	fill: #333;
+}
+
+@media (max-width: 480px) {
+	.chat-window {
+		width: 100vw;
+		height: 100vh;
+		right: 0;
+		bottom: 0;
+		border-radius: unset;
+	}
+}</style>
+<script>(function() {
+	// === robot 動態 start ===
+	const layers = [
+		{ id: "hair", initialOffset: { x: 0, y: -18 }, maxOffset: 4, reverse: true },
+		{ id: "head", initialOffset: { x: 0, y: 4 }, maxOffset: 4 },
+		{ id: "face", initialOffset: { x: 0, y: 7 }, maxOffset: 8 },
+		{ id: "expression", initialOffset: { x: 0, y: 7 }, maxOffset: 12 }
+	].map(layer => ({
+		...layer,
+		element: document.getElementById(layer.id)
+	}));
+
+	const container = document.getElementById("chatbot");
+	let containerRect = container.getBoundingClientRect();
+	let maxDistance = Math.sqrt(window.innerWidth ** 2 + window.innerHeight ** 2) / 2;
+	let mouseX = window.innerWidth / 2;
+	let mouseY = window.innerHeight / 2;
+
+	layers.forEach(layer => {
+		const { x, y } = layer.initialOffset;
+		layer.element.style.setProperty("--offset-x", `${x}px`);
+		layer.element.style.setProperty("--offset-y", `${y}px`);
+	});
+
+	function updateParallax() {
+		const centerX = containerRect.left + containerRect.width / 2;
+		const centerY = containerRect.top + containerRect.height / 2;
+		const dx = mouseX - centerX;
+		const dy = mouseY - centerY;
+		const distance = Math.sqrt(dx * dx + dy * dy);
+		if (distance === 0) return;
+		const influence = Math.min(distance / maxDistance, 1);
+		const dirX = dx / distance;
+		const dirY = dy / distance;
+
+		layers.forEach(layer => {
+			const { x: initialX, y: initialY } = layer.initialOffset;
+			const factor = layer.reverse ? -1 : 1;
+			const offsetX = dirX * layer.maxOffset * influence * factor;
+			const offsetY = dirY * layer.maxOffset * influence * factor;
+			layer.element.style.setProperty("--offset-x", `${initialX + offsetX}px`);
+			layer.element.style.setProperty("--offset-y", `${initialY + offsetY}px`);
+		});
+	}
+
+	function rotate_animate() {
+		updateParallax();
+		requestAnimationFrame(rotate_animate);
+	}
+
+	document.addEventListener("mousemove", e => {
+		mouseX = e.clientX;
+		mouseY = e.clientY;
+	});
+
+	window.addEventListener("resize", () => {
+		containerRect = container.getBoundingClientRect();
+		maxDistance = Math.sqrt(window.innerWidth ** 2 + window.innerHeight ** 2) / 2;
+	});
+
+	rotate_animate();
+
+	const blink_config = { minInterval: 5000, maxInterval: 10000, closeSpeed: 100, closedDuration: 150, openSpeed: 150 };
+	const leftEye = document.getElementById("eye-l");
+	const rightEye = document.getElementById("eye-r");
+
+	function blink() {
+		const leftBox = leftEye.getBBox();
+		const rightBox = rightEye.getBBox();
+		const leftCenterY = leftBox.y + leftBox.height / 2;
+		const rightCenterY = rightBox.y + rightBox.height / 2;
+		leftEye.style.transformOrigin = `${leftBox.x + leftBox.width / 2}px ${leftCenterY}px`;
+		rightEye.style.transformOrigin = `${rightBox.x + rightBox.width / 2}px ${rightCenterY}px`;
+		leftEye.style.transition = `transform ${blink_config.closeSpeed}ms ease-out`;
+		rightEye.style.transition = `transform ${blink_config.closeSpeed}ms ease-out`;
+		leftEye.style.transform = "scaleY(0.1)";
+		rightEye.style.transform = "scaleY(0.1)";
+		setTimeout(() => {
+			leftEye.style.transition = `transform ${blink_config.openSpeed}ms ease-out`;
+			rightEye.style.transition = `transform ${blink_config.openSpeed}ms ease-out`;
+			leftEye.style.transform = "scaleY(1)";
+			rightEye.style.transform = "scaleY(1)";
+		}, blink_config.closeSpeed + blink_config.closedDuration);
+	}
+
+	function blink_animate() {
+		const randomDelay = Math.random() * (blink_config.maxInterval - blink_config.minInterval) + blink_config.minInterval;
+		setTimeout(() => {
+			blink();
+			blink_animate();
+		}, randomDelay);
+	}
+	blink_animate();
+	// === robot 動態 end ===
+
+// === Chatbot logic start ===
+const aiResponses = [
+  "Hi! What would you like to know about me or my projects?",
+  "I’m Ateş’s personal assistant, happy to help you explore his work.",
+  "Ateş is a PHP and Laravel-focused developer building real-world web platforms.",
+  "Most of his projects are backend-oriented and performance-focused.",
+  "He is currently working on Dynexplorer Company and SEO-related tools.",
+  "Dynexplorer Online SEO Tool is one of his active live platforms.",
+  "If you’re curious about how a project was built, feel free to ask.",
+  "Ateş prefers clean, maintainable, and scalable code structures.",
+  "He started learning by building and improving real projects.",
+  "Backend logic and system design are his main interests.",
+  "Laravel is his primary framework for structured applications.",
+  "SEO tools and automation systems are part of his current focus.",
+  "He is based in İzmir and continues to grow as a developer.",
+  "Each project is a learning step and an improvement opportunity.",
+  "Security and performance are always taken into consideration.",
+  "If you want to know which tech stack is used, just ask.",
+  "Some projects are experimental and built for learning purposes.",
+  "Ateş enjoys turning ideas into working web platforms.",
+  "Clear architecture is more important than unnecessary complexity.",
+  "Let me think about that for a second… 🤔",
+  "That’s an interesting question, let me explain it simply.",
+  "If something isn’t clear, you can ask it in a different way.",
+  "I’m always here to talk about development, projects, or tech.",
+  "Thanks for checking out Ateş’s biography site!",
+  "This assistant was created to answer personal and technical questions.",
+  "Got it, I understand what you’re looking for.",
+  "Feel free to explore projects or ask about future goals."
+];
+
+	let chatHistory = [];
+	let isExpanded = false;
+	let lastMessageType = null;
+
+	const chatButton = document.getElementById("chatbot");
+	const greetingBubble = document.getElementById("greetingBubble");
+	const chatWindow = document.getElementById("chatWindow");
+	const expandButton = document.getElementById("expandButton");
+	const closeButton = document.getElementById("closeButton");
+	const chatMessages = document.getElementById("chatMessages");
+	const chatInput = document.getElementById("chatInput");
+	const sendButton = document.getElementById("sendButton");
+
+	function saveMessage(text, type) {
+		chatHistory.push({ text, type, timestamp: Date.now() });
+	}
+
+	function scrollToBottom() {
+		chatMessages.scrollTop = chatMessages.scrollHeight;
+	}
+
+	function addMessageToUI(text, type, shouldSave = true) {
+		const messageDiv = document.createElement("div");
+		messageDiv.className = `message ${type}`;
+		if (type === "ai" && lastMessageType === "ai") messageDiv.classList.add("grouped");
+
+		if (type === "ai") {
+			const avatarDiv = document.createElement("div");
+			avatarDiv.className = "ai-avatar";
+			messageDiv.appendChild(avatarDiv);
+		}
+
+		const bubbleDiv = document.createElement("div");
+		bubbleDiv.className = "message-bubble";
+		bubbleDiv.textContent = text;
+		messageDiv.appendChild(bubbleDiv);
+		chatMessages.appendChild(messageDiv);
+
+		lastMessageType = type;
+		if (shouldSave) saveMessage(text, type);
+		scrollToBottom();
+	}
+
+	function showTypingIndicator() {
+		const typingDiv = document.createElement("div");
+		typingDiv.className = "message ai";
+		typingDiv.id = "typingIndicator";
+		if (lastMessageType === "ai") typingDiv.classList.add("grouped");
+
+		const avatarDiv = document.createElement("div");
+		avatarDiv.className = "ai-avatar";
+		avatarDiv.textContent = "AI";
+		typingDiv.appendChild(avatarDiv);
+
+		const bubbleDiv = document.createElement("div");
+		bubbleDiv.className = "message-bubble";
+		const indicator = document.createElement("div");
+		indicator.className = "typing-indicator";
+		indicator.innerHTML = "<span></span><span></span><span></span>";
+		bubbleDiv.appendChild(indicator);
+		typingDiv.appendChild(bubbleDiv);
+
+		chatMessages.appendChild(typingDiv);
+		scrollToBottom();
+	}
+
+	function removeTypingIndicator() {
+		const typingIndicator = document.getElementById("typingIndicator");
+		if (typingIndicator) typingIndicator.remove();
+	}
+
+	function getRandomAIResponses() {
+		const count = Math.floor(Math.random() * 3) + 1;
+		const shuffled = [...aiResponses].sort(() => 0.5 - Math.random());
+		return shuffled.slice(0, count);
+	}
+
+	function sendMessage() {
+		const message = chatInput.value.trim();
+		if (!message) return;
+
+		addMessageToUI(message, "user");
+		chatInput.value = "";
+
+		const responses = getRandomAIResponses();
+		let delay = 800;
+
+		responses.forEach((response, index) => {
+			setTimeout(() => {
+				removeTypingIndicator();
+				addMessageToUI(response, "ai");
+				if (index < responses.length - 1) setTimeout(showTypingIndicator, 200);
+			}, delay);
+			delay += 1200 + Math.random() * 600;
+		});
+	}
+
+	function updateExpandButton() {
+		if (isExpanded) {
+			expandButton.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>';
+		} else {
+			expandButton.innerHTML = '<svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>';
+		}
+	}
+
+	function showMenuCards() {
+		// Örnek kartlar
+		const cardsData = [
+  { title: "About Me", icon: "👋", items: ["Who is Ateş?", "Where is Ateş based?", "What technologies does he use?", "How did he start coding?"] },
+  { title: "Skills & Stack", icon: "💻", items: ["PHP & Laravel experience", "Backend development focus", "SEO & automation tools", "System architecture approach"] },
+  { title: "Projects", icon: "🚀", items: ["Dynexplorer Company", "Dynexplorer Online SEO Tool", "Other active projects", "Live platforms"] },
+  { title: "Journey & Goals", icon: "🎯", items: ["Development journey", "Current learning focus", "Future plans", "Career goals"] }
+];
+
+		const wrapperDiv = document.createElement("div");
+		wrapperDiv.className = "menu-cards-wrapper";
+		const leftButton = document.createElement("button");
+		leftButton.className = "scroll-button left-button";
+		leftButton.innerHTML = '<svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>';
+		const containerDiv = document.createElement("div");
+		containerDiv.className = "menu-cards-container";
+
+		cardsData.forEach(cardData => {
+			const cardDiv = document.createElement("div");
+			cardDiv.className = "card";
+			const titleDiv = document.createElement("div");
+			titleDiv.className = "title";
+			titleDiv.innerHTML = `<span class="card-title-img">${cardData.icon}</span><span>${cardData.title}</span>`;
+			cardDiv.appendChild(titleDiv);
+			cardData.items.forEach(item => {
+				const buttonDiv = document.createElement("div");
+				buttonDiv.className = "card-button";
+				buttonDiv.innerHTML = `<span><a href="#">${item}</a></span>`;
+				buttonDiv.addEventListener("click", e => {
+					e.preventDefault();
+					chatInput.value = item;
+					sendMessage();
+				});
+				cardDiv.appendChild(buttonDiv);
+			});
+			containerDiv.appendChild(cardDiv);
+		});
+
+		const rightButton = document.createElement("button");
+		rightButton.className = "scroll-button right-button";
+		rightButton.innerHTML = '<svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>';
+
+		wrapperDiv.appendChild(leftButton);
+		wrapperDiv.appendChild(containerDiv);
+		wrapperDiv.appendChild(rightButton);
+		chatMessages.appendChild(wrapperDiv);
+
+		function checkScroll() {
+			const isScrollable = containerDiv.scrollWidth > containerDiv.clientWidth;
+			const isAtStart = containerDiv.scrollLeft <= 0;
+			const isAtEnd = containerDiv.scrollLeft >= containerDiv.scrollWidth - containerDiv.clientWidth - 5;
+			if (isScrollable) {
+				leftButton.classList.toggle("visible", !isAtStart);
+				rightButton.classList.toggle("visible", !isAtEnd);
+			}
+		}
+
+		leftButton.addEventListener("click", () => { containerDiv.scrollLeft -= 220; setTimeout(checkScroll, 300); });
+		rightButton.addEventListener("click", () => { containerDiv.scrollLeft += 220; setTimeout(checkScroll, 300); });
+		containerDiv.addEventListener("scroll", checkScroll);
+		setTimeout(checkScroll, 100);
+		scrollToBottom();
+	}
+
+	chatButton.addEventListener("click", () => {
+		chatWindow.classList.add("active");
+		chatButton.classList.add("hidden");
+		greetingBubble.classList.remove("show");
+
+		if (chatHistory.length === 0) {
+			setTimeout(() => {
+				addMessageToUI("Hello! I'm the personal assistant of Ateş, built for his biography website and ready to help you.", "ai");
+				setTimeout(() => {
+					showMenuCards();
+					lastMessageType = null;
+				}, 500);
+			}, 300);
+		}
+	});
+
+	closeButton.addEventListener("click", () => {
+		chatWindow.classList.remove("active", "expanded");
+		chatButton.classList.remove("hidden");
+		isExpanded = false;
+		updateExpandButton();
+	});
+
+	expandButton.addEventListener("click", () => {
+		isExpanded = !isExpanded;
+		chatWindow.classList.toggle("expanded", isExpanded);
+		updateExpandButton();
+		setTimeout(scrollToBottom, 100);
+	});
+
+	sendButton.addEventListener("click", sendMessage);
+	chatInput.addEventListener("keypress", e => { if (e.key === "Enter") sendMessage(); });
+	// === Chatbot logic end ===
+})();</script>
+<!DOCTYPE html>
+<html dir='ltr' lang='tr' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+<script src="https://kit.fontawesome.com/01607ee368.js" crossorigin="anonymous"></script>
+<script src='https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp'></script>
+<script>/*<![CDATA[*/
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {accent: '#451184',},
+        }
+      }
+    }
+  /*]]>*/</script>
+<!-- Other -->
+<meta charset='UTF-8'/>
+<link href='https://demoblog62727.blogspot.com/' rel='canonical'/>
+<link href='https://demoblog62727.blogspot.com/favicon.ico' rel='icon' type='image/x-icon'/>
+<meta content='width=device-width,initial-scale=1' name='viewport'/>
+<link rel="alternate" type="application/atom+xml" title="Moonary Studio - Atom" href="https://demoblog62727.blogspot.com/feeds/posts/default" />
+<link rel="alternate" type="application/rss+xml" title="Moonary Studio - RSS" href="https://demoblog62727.blogspot.com/feeds/posts/default?alt=rss" />
+<link rel="service.post" type="application/atom+xml" title="Moonary Studio - Atom" href="https://www.blogger.com/feeds/3249327708619022713/posts/default" />
+<link rel="me" href="#" />
+<script type='application/ld+json'>{"@context":"http://schema.org","@type":"WebSite","name":"Moonary Studio","url":"https://demoblog62727.blogspot.com/","potentialAction":{"@type":"SearchAction","target":"https://demoblog62727.blogspot.com/search?q={search_term_string}","query-input":"required name=search_term_string"}}</script>
+<style id='page-skin-1' type='text/css'><!--
+/*!************************************************
+* Name		: Dynexplorer Studio
+* Version	: EOL
+* Build		: 06/11/2025
+* Website	: dynexplorer.org
+**************************************************/
+::-webkit-scrollbar-corner { background: rgba(0,0,0,0.5); }
+* {scrollbar-width: thin;}
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar{width:12px;height:12px;}
+*::-webkit-scrollbar-thumb{border-radius:20px;}
+
+--></style>
+<style id='template-skin-1' type='text/css'><!--
+
+--></style>
+<script>/*<![CDATA[*/
+    // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark')
+    }
+/*]]>*/</script>
+<script src=' https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.0-beta.2/dist/turbo.es2017-umd.min.js '></script>
+<meta name='google-adsense-platform-account' content='ca-host-pub-1556223355139109'/>
+<meta name='google-adsense-platform-domain' content='blogspot.com'/>
+
+</head>
+<body class='bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-300'>
+<div class='px-4 me-auto flex pt-3 gap-4'>
+<button class='ms-auto text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5' id='theme-toggle' type='button'>
+<svg class='hidden w-5 h-5' fill='currentColor' id='theme-toggle-dark-icon' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'><path d='M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z'></path></svg>
+<svg class='hidden w-5 h-5' fill='currentColor' id='theme-toggle-light-icon' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'><path clip-rule='evenodd' d='M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z' fill-rule='evenodd'></path></svg>
+</button>
+<button class='inline-flex items-center p-2 text-sm font-medium text-center text-gray-900 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none dark:text-white focus:ring-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-600' data-dropdown-toggle='dropdownDots' id='dropdownMenuIconButton' type='button'>
+<svg aria-hidden='true' class='w-5 h-5' fill='currentColor' viewBox='0 0 4 15' xmlns='http://www.w3.org/2000/svg'>
+<path d='M3.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 6.041a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 5.959a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z'></path>
+</svg>
+</button>
+<!-- Dropdown menu -->
+<div class='z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600' id='dropdownDots'>
+<ul aria-labelledby='dropdownMenuIconButton' class='py-2 text-sm text-gray-700 dark:text-gray-200'>
+<li>
+<a class='block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white' href='https://dynexplorer.com'>Dynexplorer</a>
+</li>
+<li>
+<a class='block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white' href='https://dynexplorer.online'>Dynexplorer Online</a>
+</li>
+<li>
+<a class='block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white' href='https://venusia.info'>Venusia Plus</a>
+</li>
+</ul>
+<div class='py-2'>
+<a class='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white' href='mailto: ates@dynexplorer.com'>ates@dynexplorer.com</a>
+</div>
+</div>
+</div>
+<div class='max-w-xl mx-auto p-2 md:p-10 section' id='main'><div class='widget Profile' data-version='2' id='Profile1'>
+<div class='widget-content text-center grid individual'>
+<a class='mx-auto' href='#' rel='nofollow'>
+<img alt='Fotoğrafım' class='profile-img rounded-full w-52 h-52' height='296' src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiP3cCoEHgs-QmQ8xQMqVH52zIaFkiPnCK5P_QYlJMQMl46r3iMoy0EdMf85Pyh_PYANFSVsm0ckbrIhY5k4sfU9BQ-GO2GQxk4iFOFLrxkwdPNdmXiWwqlw_vU75NKOUmbAC0y9Ksiq2ExeWLYJF7yMKEsOkOhi-K7XnPbNTR2cUe0-KVgetjw0h-_qN4x/s1440/1000525798.webp' width='296'/>
+</a>
+<div class='profile-info pt-1 pb-4'>
+<dl class='profile-datablock'>
+<dt class='profile-data text-4xl text-gray-800 dark:text-gray-200 font-extrabold'>
+<a class='profile-link g-profile' href='#' rel='author nofollow'>
+𝓓𝓮𝓿𝓮𝓵𝓸𝓹𝓮𝓻 𝓐𝓽𝓮𝓼
+</a>
+</dt>
+</dl>
+<a class='profile-link flex gap-2 items-center justify-center' href='#' rel='author nofollow'>
+Senior Mechanical Engineer
+<svg class='w-4 h-4 text-blue-500' height='25' viewBox='0 0 256 256' width='25' xmlns='http://www.w3.org/2000/svg'><g fill='currentColor'><svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 116.87"><defs><style>.cls-1{fill:#e20147;fill-rule:evenodd;}.cls-2{fill:#fff;}</style></defs><title>verified-symbol</title><polygon class="cls-1" points="61.37 8.24 80.43 0 90.88 17.79 111.15 22.32 109.15 42.85 122.88 58.43 109.2 73.87 111.15 94.55 91 99 80.43 116.87 61.51 108.62 42.45 116.87 32 99.08 11.73 94.55 13.73 74.01 0 58.43 13.68 42.99 11.73 22.32 31.88 17.87 42.45 0 61.37 8.24 61.37 8.24"/><path class="cls-2" d="M37.92,65c-6.07-6.53,3.25-16.26,10-10.1,2.38,2.17,5.84,5.34,8.24,7.49L74.66,39.66C81.1,33,91.27,42.78,84.91,49.48L61.67,77.2a7.13,7.13,0,0,1-9.9.44C47.83,73.89,42.05,68.5,37.92,65Z"/></g></svg>
+</a>
+<div class='grid grid-cols-2 mt-5 gap-2'>
+<a class='text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 gap-1' href='https://www.instagram.com/ates.js?igsh=MTNoY3VsYXR3ZHU3Zg==' type='button'>
+<i class="fa-solid fa-user-plus" style="color: #63E6BE;"></i>
+Follow <svg class='ms-auto text-gray-500' height='15' viewBox='0 0 15 15' width='15' xmlns='http://www.w3.org/2000/svg'><path clip-rule='evenodd' d='M3 2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V8.5a.5.5 0 0 0-1 0V12H3V3h3.5a.5.5 0 0 0 0-1zm9.854.146a.5.5 0 0 1 .146.351V5.5a.5.5 0 0 1-1 0V3.707L6.854 8.854a.5.5 0 1 1-.708-.708L11.293 3H9.5a.5.5 0 0 1 0-1h3a.499.499 0 0 1 .354.146' fill='currentColor' fill-rule='evenodd'></path></svg>
+</a>
+<button onclick="window.location.href='https://buymeacoffee.com/personaldonate';"
+class='text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 gap-1' data-modal-target='crypto-modal' data-modal-toggle='crypto-modal' type='button'>
+<i class="fa-brands fa-cash-app fa-lg" style="color: #ff0059;"></i>
+Donate
+</button>
+<button onclick="window.location.href='https://ates.하늘소프트.space';"
+class='text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 gap-1' type='button'>
+<i class="fa-solid fa-earth-americas" style="color: #00a6ff;"></i>
+Web Page
+</button>
+<button onclick="window.location.href='https://ates.하늘소프트.space';"
+class='text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 gap-1' type='button'>
+<i class="fa-solid fa-hexagon-nodes-bolt" style="color: #ff2605;"></i>
+CV (Resume) <svg class='ms-auto text-gray-500' height='15' viewBox='0 0 15 15' width='15' xmlns='http://www.w3.org/2000/svg'><path clip-rule='evenodd' d='M3 2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V8.5a.5.5 0 0 0-1 0V12H3V3h3.5a.5.5 0 0 0 0-1zm9.854.146a.5.5 0 0 1 .146.351V5.5a.5.5 0 0 1-1 0V3.707L6.854 8.854a.5.5 0 1 1-.708-.708L11.293 3H9.5a.5.5 0 0 1 0-1h3a.499.499 0 0 1 .354.146' fill='currentColor' fill-rule='evenodd'></path></svg>
+</button>
+
+<button onclick="window.location.href='https://dynexplorer.org';"
+class='text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 gap-1' type='button'>
+<i class="fa-solid fa-mug-hot" style="color: #ff8c00;"></i>
+Dynexplorer <svg class='ms-auto text-gray-500' height='15' viewBox='0 0 15 15' width='15' xmlns='http://www.w3.org/2000/svg'><path clip-rule='evenodd' d='M3 2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V8.5a.5.5 0 0 0-1 0V12H3V3h3.5a.5.5 0 0 0 0-1zm9.854.146a.5.5 0 0 1 .146.351V5.5a.5.5 0 0 1-1 0V3.707L6.854 8.854a.5.5 0 1 1-.708-.708L11.293 3H9.5a.5.5 0 0 1 0-1h3a.499.499 0 0 1 .354.146' fill='currentColor' fill-rule='evenodd'></path></svg>
+</button>
+
+<button onclick="window.location.href='mailto: ates@dynexplorer.com';"
+aria-controls='ContactForm1' class='text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 gap-1' data-drawer-show='ContactForm1' data-drawer-target='ContactForm1' type='button'>
+<i class="fa-solid fa-envelope-circle-check" style="color: #006fff;"></i>
+Contact
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<iframe style="border-radius:12px"
+        src="https://open.spotify.com/embed/track/71EmWKlP0XN7eJWLZ8uHis?si=0x865jQlS1SsRc6MHHrOnw"
+        width="100%"
+        height="100"
+        frameborder="0"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy">
+</iframe>
+<article class='rounded-lg border border-gray-200 dark:border-gray-700 p-4 prose-sm dark:prose-invert'>
+<h3 class='flex items-center' dir='auto'><a aria-hidden='true' class='anchor' href='#hi-there-' id='user-content-hi-there-' tabindex='-1'>
+<svg aria-hidden='true' class='octicon octicon-link' height='16' version='1.1' viewBox='0 0 16 16' width='16'><path d='m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z' fill='currentColor'></path></svg></a>Hi there 👋</h3>
+<p dir='auto'><!-- 🌐 DYNEXPLORER OFFICIAL PROFILE -->
+
+<p align="center">
+  <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhHx0TVFeJFbpY8lbgO9_4RuO_ByPjEjvs6cuBl5wYKewV9OPolhgmSRiyf2nlolM9eEOqn3VYw1COx8btrplexJ-QRlxQczmovaIZ64oLkHvYECmYuDPRsYhnS-KKPZqr-wzqg12wO1tyqXfCDr_W8fRVz42QWDMAT4ADztTy1t944jjNJQdI9bIhmXLe7/s875/1000415428.png" alt="Dynexplorer Logo" width="100"/>
+</p>
+
+<p align="center">
+  <b>Building Innovative Digital Projects</b><br>
+  <i>PHP & Laravel focused developer creating tools, platforms, and scalable web solutions.</i>
+</p>
+
+<hr>
+<center>
+    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjpl9BaEPnTiQ1f2G0gpS2B-9Ys1KPKhS2yZHbQFWRR7LK13lrqKAbBRG0ztvfTMQgfhbL06OVwNyfC9pyXFV7ylMlbQ9BAY7hOeRCwJDALU3eBQddsh11mvnXAV4a8Jlx7ytqzkQlv5uh3RbJjfXKk4BuGY7FZ6xHlqkeapCCRFeZ-EEkGuASs7OmG7KuU/s688/1000415421.gif" width="%100" alt="Fotoğraf">
+</center>
+
+<h3><i class="fa-regular fa-circle-question"></i> About Me</h3>
+<p><b>Ateş</b> is a young software developer focused on PHP and Laravel-based web projects.<br>
+I work on building functional, scalable, and modern digital platforms through real-world projects.</p>
+
+<ul>
+  <li><i class="fa-solid fa-hexagon-nodes"></i> Founder and developer of <b>Dynexplorer Company</b> projects</li>
+  <li><i class="fa-regular fa-cloud"></i> Developing web tools, SEO systems, and automation solutions</li>
+  <li><i class="fa-solid fa-microchip"></i> Hands-on, project-driven development approach</li>
+  <li><i class="fa-solid fa-building-columns"></i> Based in İzmir, focused on growth and continuous learning</li>
+</ul>
+
+<hr>
+
+
+<h3><i class="fa-solid fa-square-binary"></i> Our Expertise</h3>
+
+<p>
+  <span style="display:inline-flex; align-items:center; gap:4px;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Laravel.svg" height="15" width="15">
+    <b>Laravel 10+</b> – Modern web applications & scalable backend architecture
+  </span><br>
+
+  <span style="display:inline-flex; align-items:center; gap:4px;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/2/27/PHP-logo.svg" height="15" width="15">
+    <b>PHP 8.x</b> – Advanced web development & backend engineering
+  </span><br>
+
+  <span style="display:inline-flex; align-items:center; gap:4px;">
+    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg2Yi6CNDCO86AEHdxD_-Z7JRBbUIpxIveYwrTKtsaAveX1eeVFN0NSF6CsPrFyWoY2ojmrYRGNrU6fiWW3M4rLDigyAb_kieC5jnN3jYG1RILihJJA2g-mM3HCwxrv3GXaA_vkGFEnttJpdkhlCw1kXpTHTZusTTo8RJocSaFVNE1_wkhmYYpr1rbyYFE/s320/1000387357.png" height="15" width="15">
+    <b>Node.js</b> – High-performance server-side development
+  </span><br>
+
+  <span style="display:inline-flex; align-items:center; gap:4px;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png" height="15" width="15">
+    <b>JavaScript</b> – Dynamic frontend & full-stack solutions
+  </span><br>
+
+  <span style="display:inline-flex; align-items:center; gap:4px;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg" height="15" width="15">
+    <b>TypeScript</b> – Strongly-typed, scalable application development
+  </span><br>
+
+  <span style="display:inline-flex; align-items:center; gap:4px;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg" height="15" width="15">
+    <b>Python</b> – Automation, data processing & AI capabilities
+  </span><br>
+
+  <span style="display:inline-flex; align-items:center; gap:4px;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/7/79/Flutter_logo.svg" height="15" width="15">
+    <b>Flutter</b> – Cross-platform mobile application development
+  </span><br>
+
+  <span style="display:inline-flex; align-items:center; gap:4px;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/7/74/Kotlin_Icon.png" height="15" width="15">
+    <b>Kotlin</b> – Modern Android application programming
+  </span><br>
+
+  <span style="display:inline-flex; align-items:center; gap:4px;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/Apple_logo_grey.svg" height="15" width="15">
+    <b>Objective-C</b> – Native iOS & macOS software development
+  </span><br>
+
+  <span style="display:inline-flex; align-items:center; gap:4px;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/C_Logo.png" height="15" width="15">
+    <b>C</b> – System programming & low-level development
+  </span><br>
+
+  <span style="display:inline-flex; align-items:center; gap:4px;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/1/18/ISO_C%2B%2B_Logo.svg" height="15" width="15">
+    <b>C++</b> – High-performance applications & game engines
+  </span><br>
+
+  <span style="display:inline-flex; align-items:center; gap:4px;">
+    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiiP8pOR3axyp-ntbO8fG5VLDikb6mtNmmAjFlRj6lImjvoZdMoHhpMMcj3camo6BYNGJC_PI_15uPEnP-KQhTcU7UpjkJhnFhiBtM_GwF4nJx034UAPoMgndzRuZSFoDn0Hkqk1T-KevlkPWVhNAyzslPKtI-jWBvk2wwa6JQ5P445b2rowsaKFtMHSq4/s320/1000387358.png" height="15" width="15">
+    <b>Machine Programming</b> – Microcontroller coding & low-level hardware control
+  </span><br>
+
+  <span style="display:inline-flex; align-items:center; gap:4px;">
+    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEibu7-nPRgNoDTRUKkGpyvHy20dHeOKWaguujnWTB_5VXDnDdlaqI97uRVeQW0OD-4qbgVNZIhteaWhv22a87L2nlQFX3BU75uUnWhai9W48J7pYhtEOPVcTl4xQwIJbaACc2EK-tS0sYx90q4C1w-b4AHlOwBomfyv4tFDxfOptdrPyb8DgJkypI-B27c/s512/1000387359.png" height="15" width="15">
+    <b>SQL / NoSQL</b> – Database design, optimization & large-scale data management
+  </span><br>
+
+  <span style="display:inline-flex; align-items:center; gap:4px;">
+    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiWYlCzyjxMqHoUTaar50OXjEqyMrrSsmuYpmpWU-2IV2sfY-mhD3av6vuyiE7XHKxHYg7W0M2YJMB39fzoedWsz_gE2rSH7tvg0EsS2M203jTUTdBoUNH-NbPe2Vly2XD0LJH1ecG086wsLAvb19dcg0YHlQfZCpDt_TDu9Z0bAMG_RUGtNXg-1MhBFVw/s1920/1000387360.png" height="15" width="15">
+    <b>Web Security</b> – Vulnerability analysis, penetration testing & protection
+  </span><br>
+
+  <span style="display:inline-flex; align-items:center; gap:4px;">
+    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj5nDXElCl_u7wULh1OsS8uTp86c4kxgajlnHixF1_0TNge9wMXiBkMuz7UNKjqkh-6-DOQLEN2Qvolly10j-lwN6-u5d2TcN_taiuOJSjvSFSHMlL8QXzVw4oTi9wTpFr5SDEjZRapTga6BNRMhZ7SarcBH4y2SxCCUFTkz3zzJotTYfvd68lQeixSnzs/s320/1000387361.png" height="15" width="15">
+    <b>RESTful API & JSON</b> – API design, integration & data communication
+  </span><br>
+
+  <span style="display:inline-flex; align-items:center; gap:4px;">
+    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhVTZHUFSRuEy1ygrB7huX8GAGJy_IHs_uAU2-Mq3VeMsF2ihsEXIO7mcF10_gHOawCZEHGzGzT-KOfek5gPvjmq_Rd-4wXRSsO6qqUywFhYgjr0YoXyu0-pynwy2UqfiqTqammwx_Cb7HWvm0xqo66OGfhim6Rhx9nFG6f7TLh6Z35uyIMj9b9VMdsVcc/s1160/1000387362.png" height="15" width="15">
+    <b>Linux & Ubuntu</b> – Server management, deployment & system configuration
+  </span>
+</p>
+<hr>
+
+<h3><i class="fa-solid fa-gear"></i> Tech Stack</h3>
+<br>
+<i class="fa-brands fa-laravel fa-2xl" style="color: #ff2424;"></i> <i class="fa-brands fa-php fa-2xl" style="color: #ab5cff;"></i> <i class="fa-brands fa-js fa-2xl" style="color: #FFD43B;"></i> <i class="fa-brands fa-node-js fa-2xl" style="color: #00e326;"></i> <i class="fa-brands fa-react fa-2xl" style="color: #00b3ff;"></i> <i class="fa-brands fa-linux fa-2xl"></i> <i class="fa-brands fa-ubuntu fa-2xl" style="color: #ff6600;"></i> <i class="fa-brands fa-flutter fa-2xl" style="color: #61b8ff;"></i> <i class="fa-brands fa-android fa-2xl" style="color: #63E6BE;"></i><p style="margin-bottom:10px;">
+<i class="fa-brands fa-apple fa-2xl"></i> <i class="fa-brands fa-blogger-b fa-2xl" style="color: #ff9d00;"></i> <i class="fa-brands fa-python fa-2xl" style="color: #006fff;"></i> 
+<hr>
+    <style>
+        *{
+}
+body {
+            background-color: #0e1116;
+            
+        .git-contributions {
+            width: 100%;
+            max-width: 510px;
+            min-width: 320px;
+            height: auto;
+            padding: 20px 10px;
+            border: solid 1px #3d444d;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            overflow: hidden;
+        }
+
+        .contribute-calendar {
+            display: flex;
+            width: 100%;
+            overflow: visible;
+        }
+
+        .weeks {
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            gap: 6px;
+            margin-top: 12px;
+            margin-left: 4px;
+            min-width: 30px;
+            flex-shrink: 0;
+        }
+
+        .weeks p {
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        .months {
+            display: flex;
+            width: 100%;
+            height: 22px;
+            gap: 8px;
+            margin-left: 38px;
+            flex-wrap: nowrap;
+            overflow: hidden;
+        }
+
+        .months p {
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .bottom-scale {
+            display: flex;
+            align-items: center;
+            justify-content: end;
+            gap: 4px;
+            margin-right: 12px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .bottom-scale p {
+            margin: 0;
+            color: #9198a1;
+            white-space: nowrap;
+        }
+
+        .color-box {
+            height: 10px;
+            width: 10px;
+            min-width: 10px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .legend-1 {
+            background-color: #171c21;
+        }
+        .legend-2 {
+            background-color: #1f432b;
+        }
+        .legend-3 {
+            background-color: #2e6b38;
+        }
+        .legend-4 {
+            background-color: #52a44f;
+        }
+        .legend-5 {
+            background-color: #6cd064;
+        }
+
+        #led-container {
+            padding: 10px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .led-row {
+            display: flex;
+            width: 100%;
+            justify-content: flex-start;
+        }
+
+        .led {
+            width: calc((100% - 100px) / 50);
+            max-width: 6px;
+            height: calc((100% - 100px) / 50);
+            max-height: 6px;
+            min-width: 3px;
+            min-height: 3px;
+            margin: 1.2px;
+            border-radius: 20%;
+            background-color: #171c21;
+            flex-shrink: 0;
+        }
+
+        .led.on-1 {
+            background-color: #1f432b;
+        }
+        .led.on-2 {
+            background-color: #2e6b38;
+        }
+        .led.on-3 {
+            background-color: #52a44f;
+        }
+        .led.on-4 {
+            background-color: #6cd064;
+        }
+
+        /* Media Queries for Mobile Optimization */
+        @media screen and (max-width: 768px) {
+            .git-contributions {
+                padding: 15px 8px;
+            }
+            
+            .months {
+                gap: 6px;
+                margin-left: 35px;
+            }
+            
+            .months p {
+                min-width: 20px;
+                font-size: 11px;
+            }
+            
+            .weeks {
+                margin-left: 2px;
+            }
+            
+            .weeks p {
+                font-size: 11px;
+            }
+            
+            .bottom-scale {
+                justify-content: center;
+                margin-right: 0;
+                gap: 3px;
+            }
+            
+            #led-container {
+                padding: 8px;
+            }
+            
+            .led {
+                margin: 1px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .git-contributions {
+                padding: 12px 6px;
+                min-width: 300px;
+            }
+            
+            .months {
+                gap: 4px;
+                margin-left: 30px;
+            }
+            
+            .months p {
+                min-width: 18px;
+                font-size: 10px;
+            }
+            
+            .weeks p {
+                font-size: 10px;
+            }
+            
+            .bottom-scale {
+                gap: 2px;
+            }
+            
+            .bottom-scale p {
+                font-size: 10px;
+            }
+            
+            .color-box {
+                height: 8px;
+                width: 8px;
+                min-width: 8px;
+            }
+        }
+
+        @media screen and (max-width: 360px) {
+         .months {
+    gap: 3px;
+    margin-left: 28px;
+}
+
+.months b {
+    min-width: 16px;
+    font-size: 9px;
+} 
+            }
+            
+            .weeks {
+                min-width: 25px;
+            }
+            
+            .weeks b {
+                font-size: 9px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="git-contributions">
+        <div class="months">
+            <small>Jan </small>
+<small>Feb </small>
+<small>Mar </small>
+<small>Apr </small>
+<small>May </small>
+<small>Jun </small>
+<small>Jul </small>
+<small>Aug </small>
+<small>Sep </small>
+<small>Oct </small>
+<small>Nov </small>
+<small>Dec </small>
+        </div>
+        <div class="contribute-calendar">
+            <div class="weeks">
+               <p style="display:inline-block; transform:translateY(-10px); margin:0 5px;">Mon</p>
+<p style="display:inline-block; transform:translateY(-20px); margin:0 5px;">Wed</p>
+<p style="display:inline-block; transform:translateY(-30px); margin:0 5px;">Fri</p>
+            </div>
+            <div style="flex: 1; overflow: hidden;">
+                <div id="led-container"></div>
+                <div class="bottom-scale">
+                    <p>Less</p>
+                    <div class="color-box legend-1"></div>
+                    <div class="color-box legend-2"></div>
+                    <div class="color-box legend-3"></div>
+                    <div class="color-box legend-4"></div>
+                    <div class="color-box legend-5"></div>
+                    <p>More</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const container = document.getElementById("led-container");
+        const ROWS = 7;
+        const COLS = 50;
+        const ledMatrix = [];
+        
+        // Responsive LED dimensions
+        function getLedSize() {
+            const containerWidth = container.clientWidth;
+            const availableWidth = containerWidth - 20; // account for padding
+            const ledSize = Math.max(3, Math.min(6, (availableWidth / COLS) - 2.4));
+            return ledSize;
+        }
+        
+        // Create LED matrix
+        function createLEDMatrix() {
+            container.innerHTML = ''; // Clear existing content
+            ledMatrix.length = 0; // Clear array
+            
+            for (let i = 0; i < ROWS; i++) {
+                const row = document.createElement("div");
+                row.className = "led-row";
+                ledMatrix[i] = [];
+                for (let j = 0; j < COLS; j++) {
+                    const led = document.createElement("div");
+                    led.className = "led";
+                    row.appendChild(led);
+                    ledMatrix[i][j] = led;
+                }
+                container.appendChild(row);
+            }
+        }
+        
+        // Font definitions (unchanged)
+        const font = {
+            A: [
+                [0, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1]
+            ],
+            B: [
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 1, 1, 1, 0]
+            ],
+            C: [
+                [0, 1, 1, 1, 1],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [0, 1, 1, 1, 1]
+            ],
+            D: [
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 1, 1, 1, 0]
+            ],
+            E: [
+                [1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [1, 1, 1, 1, 1]
+            ],
+            F: [
+                [1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0]
+            ],
+            G: [
+                [0, 1, 1, 1, 1],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 1, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [0, 1, 1, 1, 0]
+            ],
+            H: [
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1]
+            ],
+            I: [
+                [1, 1, 1, 1, 1],
+                [0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 0],
+                [1, 1, 1, 1, 1]
+            ],
+            J: [
+                [0, 0, 0, 1, 1],
+                [0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [0, 1, 1, 1, 0]
+            ],
+            K: [
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 1, 0],
+                [1, 0, 1, 0, 0],
+                [1, 1, 0, 0, 0],
+                [1, 0, 1, 0, 0],
+                [1, 0, 0, 1, 0],
+                [1, 0, 0, 0, 1]
+            ],
+            L: [
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [1, 1, 1, 1, 1]
+            ],
+            M: [
+                [1, 0, 0, 0, 1],
+                [1, 1, 0, 1, 1],
+                [1, 0, 1, 0, 1],
+                [1, 0, 1, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1]
+            ],
+            N: [
+                [1, 0, 0, 0, 1],
+                [1, 1, 0, 0, 1],
+                [1, 0, 1, 0, 1],
+                [1, 0, 1, 0, 1],
+                [1, 0, 0, 1, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1]
+            ],
+            O: [
+                [0, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [0, 1, 1, 1, 0]
+            ],
+            P: [
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0]
+            ],
+            Q: [
+                [0, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 1, 0, 1],
+                [1, 0, 0, 1, 0],
+                [0, 1, 1, 0, 1]
+            ],
+            R: [
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 1, 1, 1, 0],
+                [1, 0, 1, 0, 0],
+                [1, 0, 0, 1, 0],
+                [1, 0, 0, 0, 1]
+            ],
+            S: [
+                [0, 1, 1, 1, 1],
+                [1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [0, 1, 1, 1, 0],
+                [0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 1],
+                [1, 1, 1, 1, 0]
+            ],
+            T: [
+                [1, 1, 1, 1, 1],
+                [0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 0]
+            ],
+            U: [
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [0, 1, 1, 1, 0]
+            ],
+            V: [
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [0, 1, 0, 1, 0],
+                [0, 0, 1, 0, 0]
+            ],
+            W: [
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 1, 0, 1],
+                [1, 0, 1, 0, 1],
+                [1, 1, 0, 1, 1],
+                [1, 0, 0, 0, 1]
+            ],
+            X: [
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [0, 1, 0, 1, 0],
+                [0, 0, 1, 0, 0],
+                [0, 1, 0, 1, 0],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1]
+            ],
+            Y: [
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1],
+                [0, 1, 0, 1, 0],
+                [0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 0]
+            ],
+            Z: [
+                [1, 1, 1, 1, 1],
+                [0, 0, 0, 0, 1],
+                [0, 0, 0, 1, 0],
+                [0, 0, 1, 0, 0],
+                [0, 1, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [1, 1, 1, 1, 1]
+            ],
+            "-": [
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [1, 1, 1, 1, 1],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0]
+            ],
+            " ": [
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0]
+            ],
+            0: [
+                [1, 1, 1, 1, 1],
+                [1, 0, 0, 1, 1],
+                [1, 0, 0, 1, 1],
+                [1, 0, 1, 1, 1],
+                [1, 1, 1, 0, 1],
+                [1, 1, 0, 0, 1],
+                [1, 1, 1, 1, 1]
+            ]
+        };
+        
+        function getTextMatrix(text) {
+            let matrix = Array(7)
+                .fill()
+                .map(() => []);
+            for (let char of text.toUpperCase()) {
+                if (font[char]) {
+                    for (let i = 0; i < 7; i++) {
+                        matrix[i] = matrix[i].concat(font[char][i]);
+                        matrix[i].push(0);
+                    }
+                }
+            }
+            return matrix;
+        }
+        
+        const classNames = ["on-1", "on-2", "on-3", "on-4"];
+        
+        function displayScrollingText(text) {
+            const textMatrix = getTextMatrix(text + "   ");
+            let startCol = -COLS;
+            let lastUpdate = performance.now();
+            const delay = 100;
+            
+            function updateDisplay() {
+                const now = performance.now();
+                if (now - lastUpdate >= delay) {
+                    lastUpdate = now;
+                    
+                    for (let i = 0; i < ROWS; i++) {
+                        for (let j = 0; j < COLS; j++) {
+                            const textCol = (startCol + j) % textMatrix[0].length;
+                            
+                            if (textCol >= 0) {
+                                const isOn = textMatrix[i][textCol] === 1;
+                                const randomClass =
+                                    classNames[Math.floor(Math.random() * classNames.length)];
+                                
+                                ledMatrix[i][j].classList.remove("on-1", "on-2", "on-3", "on-4");
+                                
+                                if (isOn) {
+                                    ledMatrix[i][j].classList.add(randomClass);
+                                }
+                            } else {
+                                ledMatrix[i][j].classList.remove("on-1", "on-2", "on-3", "on-4");
+                            }
+                        }
+                    }
+                    
+                    startCol++;
+                    
+                    if (startCol > textMatrix[0].length) {
+                        startCol = -COLS;
+                    }
+                }
+                requestAnimationFrame(updateDisplay);
+            }
+            
+            updateDisplay();
+        }
+        
+        // Initialize and handle resize
+        function init() {
+            createLEDMatrix();
+            displayScrollingText("SOVEREIGNTY UNCONDITIONALLY BELONGS TO THE NATION - MUSTAFA KEMAL ATATURK");
+        }
+        
+        // Handle window resize
+        let resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function() {
+                createLEDMatrix();
+                displayScrollingText("WIP--permanent BETA -- Version 0");
+            }, 250);
+        });
+        
+        // Initialize on load
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
+
+<hr>
+<h3><i class="fa-solid fa-crosshairs"></i> My Vision</h3>
+<p>To grow as a software developer and build impactful web platforms using PHP and Laravel.</p>
+
+<h3><i class="fa-regular fa-compass"></i> My Mission</h3>
+<p>To develop fast, secure, and scalable web projects while continuously improving my technical skills.</p>
+<hr>
+<h3><i class="fa-solid fa-puzzle-piece"></i> Core Values</h3>
+<ul>
+  <li><i class="fa-solid fa-magnifying-glass"></i> <b>Transparency:</b> Clear code, honest communication</li>
+  <li><i class="fa-regular fa-lightbulb"></i> <b>Innovation:</b> Learning by building real projects</li>
+  <li><i class="fa-solid fa-people-group"></i> <b>Independence:</b> Self-driven development mindset</li>
+  <li><i class="fa-solid fa-leaf"></i> <b>Consistency:</b> Sustainable growth in skills and projects</li>
+</ul>
+<hr>
+<h3><i class="fa-solid fa-hexagon-nodes-bolt"></i> Focus Areas</h3>
+<ul>
+  <li>PHP & Laravel web applications</li>
+  <li>SEO tools and analytics systems</li>
+  <li>Automation and custom scripts</li>
+  <li>Backend-focused system design</li>
+  <li>Performance and security optimization</li>
+</ul>
+<hr>
+<h3><i class="fa-solid fa-chart-pie"></i> Technical Snapshot</h3>
+<ul>
+  <li><i class="fa-solid fa-clock-rotate-left"></i> Development experience: 2+ years</li>
+  <li><i class="fa-solid fa-code"></i> Written code: 100,000+ lines</li>
+  <li><i class="fa-solid fa-file-code"></i> Active projects: Multiple</li>
+  <li><i class="fa-brands fa-creative-commons"></i> Live platforms: Dynexplorer tools</li>
+</ul>
+<hr>
+<h3><i class="fa-solid fa-code-branch"></i> System Architecture</h3>
+<p>My projects are built mainly with <b>PHP</b> and <b>Laravel</b>, following a clean and modular structure.<br>
+I focus on backend logic, performance, and maintainable code architecture.</p>
+<hr>
+<h3><i class="fa-regular fa-handshake"></i> Projects & Platforms</h3>
+<ul>
+  <li><i class="fa-regular fa-building"></i> <b>Dynexplorer Company</b> – Main development projects</li>
+  <li><i class="fa-regular fa-building"></i> <b>Dynexplorer Online SEO Tool</b> – SEO & analysis platform</li>
+  <li><i class="fa-regular fa-building"></i> <b>Personal & experimental projects</b> – Learning and testing</li>
+</ul>
+
+<h3><i class="fa-solid fa-mug-hot"></i> Contributing</h3>
+<ol>
+  <li>Review the project structure</li>
+  <li>Create improvements or fixes</li>
+  <li>Test changes locally</li>
+  <li>Share feedback or suggestions</li>
+</ol>
+
+<hr>
+
+<h3><i class="fa-solid fa-link"></i> Certifications & Achievements</h3>
+<ul>
+  <li>Independent project-based learning</li>
+  <li>Live web platforms and tools</li>
+  <li>Continuous self-improvement in PHP & Laravel</li>
+</ul>
+<style>
+  .box { margin-bottom: 12px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
+</style>
+</head>
+<body>
+
+<hr>
+
+<h2><i class="fa-solid fa-circle-info"></i> Phone Information</h2>
+
+<div class="box">
+  <strong><i class="fa-solid fa-battery-three-quarters"></i> Charge Status:</strong>
+  <p id="battery">Loading...</p>
+</div>
+
+<div class="box">
+  <strong><i class="fa-solid fa-power-off"></i> IP Address:</strong>
+  <p id="ip"></p>
+</div>
+
+<div class="box">
+  <strong><i class="fa-solid fa-location-crosshairs"></i> Location (from IP):</strong>
+  <p id="location">Loading...</p>
+</div>
+
+<script>
+// === ŞARJ BİLGİSİ ===
+if (navigator.getBattery) {
+  navigator.getBattery().then(battery => {
+    function updateBattery() {
+      document.getElementById("battery").innerText =
+        `Level: %${parseInt(battery.level * 100)} | Is it charging? ${battery.charging ? "Yes" : "No"}`;
+    }
+    updateBattery();
+    battery.addEventListener("levelchange", updateBattery);
+    battery.addEventListener("chargingchange", updateBattery);
+  });
+} else {
+  document.getElementById("battery").innerText = "The browser does not support it.";
+}
+
+// === IP & KONUM (ULKE + ŞEHİR) ===
+fetch("https://ipapi.co/json/")
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("ip").innerText = data.ip;
+    document.getElementById("location").innerText =
+      `Country: ${data.country_name} | City: ${data.city}`;
+  })
+  .catch(() => {
+    document.getElementById("ip").innerText = "Could not get IP.";
+    document.getElementById("location").innerText = "Location could not be obtained.";
+  });
+
+</script>
+
+</body>
+</html>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>/*<![CDATA[*/
+var themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+var themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+// Change the icons inside the button based on previous settings
+if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    themeToggleLightIcon.classList.remove('hidden');
+} else {
+    themeToggleDarkIcon.classList.remove('hidden');
+}
+
+var themeToggleBtn = document.getElementById('theme-toggle');
+
+themeToggleBtn.addEventListener('click', function() {
+
+    // toggle icons inside button
+    themeToggleDarkIcon.classList.toggle('hidden');
+    themeToggleLightIcon.classList.toggle('hidden');
+
+    // if set via local storage previously
+    if (localStorage.getItem('color-theme')) {
+        if (localStorage.getItem('color-theme') === 'light') {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('color-theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('color-theme', 'light');
+        }
+
+    // if NOT set via local storage previously
+    } else {
+        if (document.documentElement.classList.contains('dark')) {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('color-theme', 'light');
+        } else {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('color-theme', 'dark');
+        }
+    }
+    
+});
+
+/*]]>*/</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js'></script>
+
+<script type="text/javascript" src="https://www.blogger.com/static/v1/widgets/1166699449-widgets.js"></script>
+<script type='text/javascript'>
+
+</script>
+</body>
+</html>
+<br>
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>SVG Digital Clock with Animated Digits</title>
+    <link rel="stylesheet" href="./style.css">
+
+  </head>
+    
+  <body>
+  <head>
+    <meta charset="UTF-8">
+    <title>#Clocktober Day 6: Strokes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"> </head>
+    
+  <body>
+  <svg class="clock" viewBox="0 0 80 20" role="img">
+  <g fill="currentColor">
+    <circle cx="25.5" cy="6" r="1" />
+    <circle cx="25.5" cy="14" r="1" />
+    <circle cx="54.5" cy="6" r="1" />
+    <circle cx="54.5" cy="14" r="1" />
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <g data-digit="0">
+      <polyline class="clock__digit" stroke-dasharray="53 53" stroke-dashoffset="-53" points="1 1,9 1,9 19,1 19,1 1" />
+      <polyline class="clock__digit" stroke-dasharray="19 19" stroke-dashoffset="-19" points="9 1,9 19" />
+      <polyline class="clock__digit" stroke-dasharray="43 43" stroke-dashoffset="-43" points="1 1,9 1,9 10,1 10,1 19,9 19" />
+    </g>
+    <g data-digit="0" transform="translate(12,0)">
+      <polyline class="clock__digit" stroke-dasharray="53 53" stroke-dashoffset="-53" points="1 1,9 1,9 19,1 19,1 1" />
+      <polyline class="clock__digit" stroke-dasharray="19 19" stroke-dashoffset="-19" points="9 1,9 19" />
+      <polyline class="clock__digit" stroke-dasharray="43 43" stroke-dashoffset="-43" points="1 1,9 1,9 10,1 10,1 19,9 19" />
+      <polyline class="clock__digit" stroke-dasharray="51 51" stroke-dashoffset="-51" points="1 1,9 1,9 10,1 10,9 10,9 19,1 19" />
+      <polyline class="clock__digit" stroke-dasharray="45 45" stroke-dashoffset="-45" points="1 1,1 10,9 10,9 1,9 19" />
+      <polyline class="clock__digit" stroke-dasharray="43 43" stroke-dashoffset="-43" points="9 1,1 1,1 10,9 10,9 19,1 19" />
+      <polyline class="clock__digit" stroke-dasharray="52 52" stroke-dashoffset="-52" points="9 1,1 1,1 19,9 19,9 10,1 10" />
+      <polyline class="clock__digit" stroke-dasharray="27 27" stroke-dashoffset="-27" points="1 1,9 1,9 19" />
+      <polyline class="clock__digit" stroke-dasharray="61 61" stroke-dashoffset="-61" points="9 10,1 10,1 1,9 1,9 19,1 19,1 10" />
+      <polyline class="clock__digit" stroke-dasharray="52 52" stroke-dashoffset="-52" points="9 10,1 10,1 1,9 1,9 19,1 19" />
+    </g>
+    <g data-digit="0" transform="translate(29,0)">
+      <polyline class="clock__digit" stroke-dasharray="53 53" stroke-dashoffset="-53" points="1 1,9 1,9 19,1 19,1 1" />
+      <polyline class="clock__digit" stroke-dasharray="19 19" stroke-dashoffset="-19" points="9 1,9 19" />
+      <polyline class="clock__digit" stroke-dasharray="43 43" stroke-dashoffset="-43" points="1 1,9 1,9 10,1 10,1 19,9 19" />
+      <polyline class="clock__digit" stroke-dasharray="51 51" stroke-dashoffset="-51" points="1 1,9 1,9 10,1 10,9 10,9 19,1 19" />
+      <polyline class="clock__digit" stroke-dasharray="45 45" stroke-dashoffset="-45" points="1 1,1 10,9 10,9 1,9 19" />
+      <polyline class="clock__digit" stroke-dasharray="43 43" stroke-dashoffset="-43" points="9 1,1 1,1 10,9 10,9 19,1 19" />
+    </g>
+    <g data-digit="0" transform="translate(41,0)">
+      <polyline class="clock__digit" stroke-dasharray="53 53" stroke-dashoffset="-53" points="1 1,9 1,9 19,1 19,1 1" />
+      <polyline class="clock__digit" stroke-dasharray="19 19" stroke-dashoffset="-19" points="9 1,9 19" />
+      <polyline class="clock__digit" stroke-dasharray="43 43" stroke-dashoffset="-43" points="1 1,9 1,9 10,1 10,1 19,9 19" />
+      <polyline class="clock__digit" stroke-dasharray="51 51" stroke-dashoffset="-51" points="1 1,9 1,9 10,1 10,9 10,9 19,1 19" />
+      <polyline class="clock__digit" stroke-dasharray="45 45" stroke-dashoffset="-45" points="1 1,1 10,9 10,9 1,9 19" />
+      <polyline class="clock__digit" stroke-dasharray="43 43" stroke-dashoffset="-43" points="9 1,1 1,1 10,9 10,9 19,1 19" />
+      <polyline class="clock__digit" stroke-dasharray="52 52" stroke-dashoffset="-52" points="9 1,1 1,1 19,9 19,9 10,1 10" />
+      <polyline class="clock__digit" stroke-dasharray="27 27" stroke-dashoffset="-27" points="1 1,9 1,9 19" />
+      <polyline class="clock__digit" stroke-dasharray="61 61" stroke-dashoffset="-61" points="9 10,1 10,1 1,9 1,9 19,1 19,1 10" />
+      <polyline class="clock__digit" stroke-dasharray="52 52" stroke-dashoffset="-52" points="9 10,1 10,1 1,9 1,9 19,1 19" />
+    </g>
+    <g data-digit="0" transform="translate(58,0)">
+      <polyline class="clock__digit" stroke-dasharray="53 53" stroke-dashoffset="-53" points="1 1,9 1,9 19,1 19,1 1" />
+      <polyline class="clock__digit" stroke-dasharray="19 19" stroke-dashoffset="-19" points="9 1,9 19" />
+      <polyline class="clock__digit" stroke-dasharray="43 43" stroke-dashoffset="-43" points="1 1,9 1,9 10,1 10,1 19,9 19" />
+      <polyline class="clock__digit" stroke-dasharray="51 51" stroke-dashoffset="-51" points="1 1,9 1,9 10,1 10,9 10,9 19,1 19" />
+      <polyline class="clock__digit" stroke-dasharray="45 45" stroke-dashoffset="-45" points="1 1,1 10,9 10,9 1,9 19" />
+      <polyline class="clock__digit" stroke-dasharray="43 43" stroke-dashoffset="-43" points="9 1,1 1,1 10,9 10,9 19,1 19" />
+    </g>
+    <g data-digit="0" transform="translate(70,0)">
+      <polyline class="clock__digit" stroke-dasharray="53 53" stroke-dashoffset="-53" points="1 1,9 1,9 19,1 19,1 1" />
+      <polyline class="clock__digit" stroke-dasharray="19 19" stroke-dashoffset="-19" points="9 1,9 19" />
+      <polyline class="clock__digit" stroke-dasharray="43 43" stroke-dashoffset="-43" points="1 1,9 1,9 10,1 10,1 19,9 19" />
+      <polyline class="clock__digit" stroke-dasharray="51 51" stroke-dashoffset="-51" points="1 1,9 1,9 10,1 10,9 10,9 19,1 19" />
+      <polyline class="clock__digit" stroke-dasharray="45 45" stroke-dashoffset="-45" points="1 1,1 10,9 10,9 1,9 19" />
+      <polyline class="clock__digit" stroke-dasharray="43 43" stroke-dashoffset="-43" points="9 1,1 1,1 10,9 10,9 19,1 19" />
+      <polyline class="clock__digit" stroke-dasharray="52 52" stroke-dashoffset="-52" points="9 1,1 1,1 19,9 19,9 10,1 10" />
+      <polyline class="clock__digit" stroke-dasharray="27 27" stroke-dashoffset="-27" points="1 1,9 1,9 19" />
+      <polyline class="clock__digit" stroke-dasharray="61 61" stroke-dashoffset="-61" points="9 10,1 10,1 1,9 1,9 19,1 19,1 10" />
+      <polyline class="clock__digit" stroke-dasharray="52 52" stroke-dashoffset="-52" points="9 10,1 10,1 1,9 1,9 19,1 19" />
+    </g>
+  </g>
+</svg>
+ </body>
+    <script  src="./script.js"></script>
+
+  </body>
+  
+</html>
+<style>* {
+  
+}
+:root {
+ 
+}
+body {
+   var(--trans-dur), color var(--trans-dur);
+}
+
+/* Floating CodePen button */
+    .codepen-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background-color: #111;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+      z-index: 1000;
+      overflow: hidden;
+    }
+
+    .codepen-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .codepen-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+    }
+.clock {
+  display: block;
+  margin: auto;
+  width: 12em;
+  height: 3em;
+}
+.clock__digit {
+  animation-duration: 0.8s;
+  animation-fill-mode: forwards;
+  animation-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+[data-digit="0"] .clock__digit:nth-child(10) { animation-name: digit9R; }
+[data-digit="0"] .clock__digit:nth-child(1) { animation-name: digit0; }
+[data-digit="0"]:nth-child(1) .clock__digit:nth-child(3) { animation-name: digit2R; }
+[data-digit="0"]:nth-child(2) .clock__digit:nth-child(4) { animation-name: digit3R; }
+[data-digit="0"]:nth-child(3) .clock__digit:nth-child(6),
+[data-digit="0"]:nth-child(5) .clock__digit:nth-child(6) { animation-name: digit5R; }
+[data-digit="0"]:nth-child(1) + [data-digit="0"] .clock__digit:nth-child(10) { visibility: hidden; }
+[data-digit="1"] .clock__digit:nth-child(1) { animation-name: digit0R; }
+[data-digit="1"] .clock__digit:nth-child(2) { animation-name: digit1; }
+[data-digit="2"] .clock__digit:nth-child(2) { animation-name: digit1R; }
+[data-digit="2"] .clock__digit:nth-child(3) { animation-name: digit2; }
+[data-digit="3"] .clock__digit:nth-child(3) { animation-name: digit2R; }
+[data-digit="3"] .clock__digit:nth-child(4) { animation-name: digit3; }
+[data-digit="4"] .clock__digit:nth-child(4) { animation-name: digit3R; }
+[data-digit="4"] .clock__digit:nth-child(5) { animation-name: digit4; }
+[data-digit="5"] .clock__digit:nth-child(5) { animation-name: digit4R; }
+[data-digit="5"] .clock__digit:nth-child(6) { animation-name: digit5; }
+[data-digit="6"] .clock__digit:nth-child(6) { animation-name: digit5R; }
+[data-digit="6"] .clock__digit:nth-child(7) { animation-name: digit6; }
+[data-digit="7"] .clock__digit:nth-child(7) { animation-name: digit6R; }
+[data-digit="7"] .clock__digit:nth-child(8) { animation-name: digit7; }
+[data-digit="8"] .clock__digit:nth-child(8) { animation-name: digit7R; }
+[data-digit="8"] .clock__digit:nth-child(9) { animation-name: digit8; }
+[data-digit="9"] .clock__digit:nth-child(9) { animation-name: digit8R; }
+[data-digit="9"] .clock__digit:nth-child(10) { animation-name: digit9; }
+
+/* Dark theme */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: hsl(var(--hue),10%,10%);
+    --fg: hsl(var(--hue),10%,90%);
+  }
+}
+
+/* Animations */
+@keyframes digit0 {
+  from, 50% { stroke-dashoffset: 53; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes digit0R {
+  from { stroke-dashoffset: 0; }
+  50%, to { stroke-dashoffset: -53; }
+}
+@keyframes digit1 {
+  from, 50% { stroke-dashoffset: 19; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes digit1R {
+  from { stroke-dashoffset: 0; }
+  50%, to { stroke-dashoffset: -19; }
+}
+@keyframes digit2 {
+  from, 50% { stroke-dashoffset: 43; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes digit2R {
+  from { stroke-dashoffset: 0; }
+  50%, to { stroke-dashoffset: -43; }
+}
+@keyframes digit3 {
+  from, 50% { stroke-dashoffset: 51; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes digit3R {
+  from { stroke-dashoffset: 0; }
+  50%, to { stroke-dashoffset: -51; }
+}
+@keyframes digit4 {
+  from, 50% { stroke-dashoffset: 45; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes digit4R {
+  from { stroke-dashoffset: 0; }
+  50%, to { stroke-dashoffset: -45; }
+}
+@keyframes digit5 {
+  from, 50% { stroke-dashoffset: 43; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes digit5R {
+  from { stroke-dashoffset: 0; }
+  50%, to { stroke-dashoffset: -43; }
+}
+@keyframes digit6 {
+  from, 50% { stroke-dashoffset: 52; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes digit6R {
+  from { stroke-dashoffset: 0; }
+  50%, to { stroke-dashoffset: -52; }
+}
+@keyframes digit7 {
+  from, 50% { stroke-dashoffset: 27; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes digit7R {
+  from { stroke-dashoffset: 0; }
+  50%, to { stroke-dashoffset: -27; }
+}
+@keyframes digit8 {
+  from, 50% { stroke-dashoffset: 61; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes digit8R {
+  from { stroke-dashoffset: 0; }
+  50%, to { stroke-dashoffset: -61; }
+}
+@keyframes digit9 {
+  from, 50% { stroke-dashoffset: 52; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes digit9R {
+  from { stroke-dashoffset: 0; }
+  50%, to { stroke-dashoffset: -52; }
+}</style><script>window.addEventListener("DOMContentLoaded",() => {
+  const c = new Clock6(".clock");
+});
+
+class Clock6 {
+  constructor(el) {
+    this.el = document.querySelector(el);
+
+    this.init();
+  }
+  init() {
+    this.timeUpdate();
+  }
+  get timeAsObject() {
+    const date = new Date();
+    let h = date.getHours();
+    const m = date.getMinutes();
+    const s = date.getSeconds();
+
+    return { h, m, s };
+  }
+  get timeAsString() {
+    let { h, m, s } = this.timeAsObject;
+    // insert 0 before single digits
+    if (h < 10) h = `0${h}`;
+    if (m < 10) m = `0${m}`;
+    if (s < 10) s = `0${s}`;
+
+    return `${h}:${m}:${s}`;
+  }
+  get timeDigits() {
+    return this.timeAsString.split("").filter(p => p !== ":");
+  }
+  timeUpdate() {
+    // update the `aria-label`
+    this.el?.setAttribute("aria-label", this.timeAsString);
+    // update the digits
+    this.timeDigits.forEach((digit,i) => {
+      const digitEl = this.el.querySelectorAll("[data-digit]")[i];
+      if (!digitEl) return;
+
+      digitEl.setAttributeNS(null,"data-digit",digit);
+    });
+    // loop
+    clearTimeout(this.timeUpdateLoop);
+    this.timeUpdateLoop = setTimeout(this.timeUpdate.bind(this),1e3);
+  }
+}</script><br>
